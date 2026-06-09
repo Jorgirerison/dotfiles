@@ -1,0 +1,85 @@
+/* Paleta Catppuccin Mocha */
+@define-color base   #1e1e2e;
+@define-color mantle #181825;
+@define-color crust  #11111b;
+@define-color text   #cdd6f4;
+@define-color subtext0 #a6adc8;
+@define-color subtext1 #bac2de;
+@define-color surface0 #313244;
+@define-color surface1 #45475a;
+@define-color surface2 #585b70;
+@define-color overlay0 #6c7086;
+@define-color overlay1 #7f849c;
+@define-color overlay2 #9399b2;
+@define-color blue      #89b4fa;
+@define-color lavender  #b4befe;
+@define-color sapphire  #74c7ec;
+@define-color red       #f38ba8;
+@define-color mauve     #cba6f7;
+
+/* Estilo Geral do Painel */
+* {
+  font-family: "JetBrainsMono Nerd Font", sans-serif;
+  font-size: 14px;
+}
+
+.control-center .notification-row:focus,
+.control-center .notification-row:hover {
+  opacity: 1;
+  background: @mantle;
+}
+
+/* O Popup da Notificação */
+.notification {
+  border-radius: 12px;
+  margin: 6px 12px;
+  background-color: @base;
+  color: @text;
+  border: 1px solid @surface0;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Espaçamento Interno (Padding) */
+.notification-content {
+  background: transparent;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+/* Título e Texto */
+.summary {
+  font-weight: bold;
+  font-size: 15px;
+  color: @lavender;
+}
+
+.body {
+  font-size: 13px;
+  color: @subtext1;
+  margin-top: 4px;
+}
+
+/* Botão de Fechar */
+.close-button {
+  background: transparent;
+  color: @text;
+  border-radius: 100%;
+  margin: 6px;
+  padding: 4px;
+}
+
+.close-button:hover {
+  background-color: @red;
+  color: @crust;
+}
+
+/* Barra de Progresso (se a notificação tiver) */
+progressbar,
+progress,
+trough {
+  border-radius: 8px;
+}
+
+progress {
+  background-color: @blue;
+}
