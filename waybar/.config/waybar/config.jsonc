@@ -4,7 +4,7 @@
   "modules-center": [],
   "modules-right": ["memory","cpu","temperature","network", "pulseaudio", "battery", "clock"],
   "clock": {
-    "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %H:%M}",
+    "format": "<span foreground='#f5c2e7'>  </span>{:%a %d %H:%M}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "battery": {
@@ -30,7 +30,7 @@
     "tooltip-format-wifi": "Rede: {essid}"
   },
   "pulseaudio": {
-      "format": "{icon}  {volume}%",
+      "format": "{icon} {volume}%",
       "format-muted": "",
       "format-icons": {
           "default": ["", "", " "]
@@ -46,7 +46,7 @@
   },
   "cpu": {
     "interval": 10,
-    "format": "{}% ",
+    "format": "{:.0f}% ",
     "max-length": 10
   },
   "memory": {

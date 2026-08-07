@@ -175,13 +175,6 @@ map("i", "jk", "<esc>", { desc = "Exit from insert mood" })
 -- Modo VISUAL
 -- -----------------------------------------------------------------------------
 
--- gv re-seleciona a última seleção visual
-vim.api.nvim_set_keymap("v", "<leader>s", [[:w! /mnt/meuHDExterno/projects/creation-anki-cards-auto/anotacoes.txt]], {
-	noremap = true,
-	silent = true,
-	desc = "Sobescrever arquivo com seleção",
-})
-
 -- deixa a seleção em negrito em markdown
 map("x", "<C-b>", "c**<esc>pa**", { desc = "Deixar seleção em negrito" })
 
@@ -199,3 +192,57 @@ map("x", "<leader>u", "Ugv<esc>", { desc = "deixar seleção em maiúscula" })
 
 -- Copia a seleção
 map("x", "<leader>y", '"+y')
+
+
+-- Iniciar Pomodoro capturando contexto do Markdown e jogando pro Tmux
+map('n', '<leader>ps', function()
+    -- 1. Pega a linha atual onde o cursor está
+    local current_line = vim.api.nvim_get_current_line()
+    
+    -- 2. Extrai a Tag Micro, a Tag Tech e a Descrição
+    -- Tenta primeiro o padrão completo: - [ ] [Tag] [Tech] Descrição
+    local micro_tag, tech_tag, desc = current_line:match("%- %[%s*%] %[(.-)%]%s*%[(.-)%]%s*(.+)")
+
+    -- Se falhar (não tem o segundo colchete), tenta o padrão antigo: - [ ] [Tag] Descrição
+    if not micro_tag then
+        micro_tag, desc = current_line:match("%- %[%s*%] %[(.-)%]%s*(.+)")
+        tech_tag = nil -- Deixa nulo para sabermos que não tem tech
+    end
+
+    if not micro_tag or not desc then
+        print("Erro: Use '- [ ] [Tag] [Tech] Descrição' ou '- [ ] [Tag] Descrição'")
+        return
+    end
+
+    -- 3. Sobe as linhas para achar o Projeto (Tag Macro)
+    local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+    local macro_tag = nil
+
+    for i = row - 1, 0, -1 do
+        local line = vim.api.nvim_buf_get_lines(0, i, i + 1, false)[1]
+        -- Padrão do cabeçalho: **Nome-do-projeto** isolado na linha
+        local match = line:match("^%s*%*%*(.-)%*%*%s*$")
+        if match then
+            macro_tag = match
+            break
+        end
+    end
+
+    if not macro_tag then
+        macro_tag = "sem-projeto"
+    end
+
+    -- 4. Monta a string de tags dinamicamente
+    local tags = string.format("%s, %s", macro_tag, string.lower(micro_tag))
+    if tech_tag then
+        -- Se a tecnologia existir, adiciona ela na lista de tags (em letras minúsculas)
+        tags = tags .. ", " .. string.lower(tech_tag)
+    end
+
+    -- 5. Monta o comando do pomo padronizado
+    local cmd = string.format('pomo start -p 1 -t "%s" "%s"', tags, desc)
+    
+    -- 6. Dispara para o painel da direita no Tmux
+    os.execute(string.format("tmux send-keys -t '{right-of}' '%s' C-m", cmd))
+    
+end, { desc = "Start Pomo in Tmux right pane" })

@@ -20,14 +20,26 @@ return {
 				enabled = true,
 				-- O template em si. Você pode usar formatação YAML no topo.
 				template = [[
----
-titulo: {{ title }}
-data: {{ date }}
-tags: []
----
-
 # {{ title }}
+*Tags: #*
 
+## 🗂️ Legenda de Classificação
+* **[Story] Funcionalidade:** Desenvolvimento planejado (ex: nova tela, automação nova).
+* **[Task] Técnica:** Manutenção de bastidores (ex: atualizar ambiente, refatorar código).
+* **[Bug] Falha:** Quebra de produção (ex: erro no fluxo de aprovação).
+* **[Request] Suporte:** Atendimentos operacionais e rotina corporativa (ex: liberação de acessos).
+* **[Spike] Pesquisa:** Estudos e buscas de informação geral (ex: pesquisar mercado, ler docs).
+* **[Pessoal] Rotina:** Compromissos e vida fora do dev (ex: academia, finanças, casa).
+
+# 🎯 Foco
+(*Lembre-se que ao dia você só pode no máximo planejar 14 pomodoros na melhor das hipóteses*)
+- [ ] [Story] [Power Bi]
+- [ ] [Task] [Sharepoint]
+
+## 🚧 Interrupções / Não Planejado
+(*Anotar aqui qualquer coisa que tentar roubar sua atenção durante um ciclo, geralmente Bugs e Requests vão cair muito aqui*)
+- [ ] [Request] 
+- [ ] [Bug]
 ]],
 				-- Lógica para substituir as variáveis no template acima
 				placeholders = {
