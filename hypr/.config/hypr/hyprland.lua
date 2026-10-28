@@ -17,12 +17,14 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
+
+-- monitor externo
+
 -- hl.monitor({
---   output   = "HDMI-A-1",
---   mode     = "1920x1080@60",
---   position = "0x0",
+--   output   = "HDMI-A-1", -- troque pelo nome que o hyprctl mostrou
+--   mode     = "preferred",
+--   position = "auto-left",
 --   scale    = "auto",
---   mirror   = "eDP-1",
 -- })
 
 hl.monitor({
@@ -63,6 +65,7 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("wl-paste --type image --watch cliphist store")
   hl.exec_cmd("blueman-applet")
   hl.exec_cmd("easyeffects --gapplication-service")
+  hl.exec_cmd("fcitx5 -d")
 end)
 
 -------------------------------
@@ -83,6 +86,8 @@ hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
 hl.env("XDG_MENU_PREFIX", "arch-")
 hl.env("NIXOS_OZONE_WL", "1")
+hl.env("XMODIFIERS", "@im=fcitx")
+hl.env("QT_IM_MODULE", "fcitx")
 
 -----------------------
 ----- PERMISSIONS -----
@@ -250,7 +255,7 @@ hl.config({
 
     follow_mouse            = 1,
 
-    sensitivity             = 0.5, -- -1.0 - 1.0, 0 means no modification.
+    sensitivity             = 0.3, -- -1.0 - 1.0, 0 means no modification.
     accel_profile           = "flat",
     emulate_discrete_scroll = 0,
 
@@ -302,6 +307,18 @@ hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("hyprshot -m region"))
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"))
+-- hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("melonDS"))
+hl.bind(mainMod .. " + N", hl.dsp.exec_cmd([[
+  if hyprctl clients | grep -qi 'class:.*melonds'; then
+    hyprctl dispatch 'hl.dsp.focus({ workspace = 5 })'
+  else
+    melonDS
+  fi
+]]))
+
+-- brightness
+hl.bind(mainMod .. " + Y", hl.dsp.exec_cmd("hyprsunset temperature 4000"))
+hl.bind(mainMod .. " + SHIFT + Y", hl.dsp.exec_cmd("hyprsunset identity"))
 
 -- swap windows
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.swap({ direction = "left" }))
@@ -409,4 +426,10 @@ hl.window_rule({
 
   move  = "20 monitor_h-120",
   float = true,
+})
+
+hl.window_rule({
+  name = "melonds-ws5",
+  match = { class = "(?i).*melonds.*" },
+  workspace = "5"
 })
