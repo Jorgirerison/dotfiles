@@ -1,5 +1,5 @@
 configuration{
-    modi: "run,window,combi";
+    modes: "drun,run,window,combi,calc";
     icon-theme: "Oranchelo";
     show-icons: true;
     terminal: "alacritty";
@@ -10,8 +10,9 @@ configuration{
     display-combi: " 🖥️  All ";
     display-run: " 🏃  Run ";
     display-window: " 🪟  Window";
+    display-drun: " 🚀  Apps ";
     sidebar-mode: true;
-    modes: "calc:rofi -show calc -modi calc -no-show-match -no-sort";
+    display-calc: " 🧮  Calc ";
 }
 
 @theme "catppuccin-mocha"

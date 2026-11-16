@@ -66,6 +66,9 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("blueman-applet")
   hl.exec_cmd("easyeffects --gapplication-service")
   hl.exec_cmd("fcitx5 -d")
+  hl.exec_cmd("rm -f \"$XDG_RUNTIME_DIR/hyprsunset-off\"; hyprsunset -t 4000")
+  -- scratchpad: kitty + tmux escondido no special:magic (ver regra "scratchpad-terminal")
+  hl.exec_cmd(terminal .. " --class scratchpad -e sh -c 'tmux attach || tmux new-session'")
 end)
 
 -------------------------------
@@ -250,7 +253,7 @@ hl.config({
     kb_layout               = "us",
     kb_variant              = "intl",
     kb_model                = "",
-    kb_options              = "lv3:caps_switch",
+    kb_options              = "caps:swapescape",
     kb_rules                = "",
 
     follow_mouse            = 1,
@@ -261,6 +264,7 @@ hl.config({
 
     touchpad                = {
       natural_scroll = true,
+      disable_while_typing = false,
     },
   },
 })
@@ -295,7 +299,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + W", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + D", hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + Alt_L", hl.dsp.layout("togglesplit")) -- dwindle only
+hl.bind(mainMod .. " + T", hl.dsp.layout("togglesplit")) -- dwindle only
 hl.bind(mainMod .. " + SPACE", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
 hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 hl.bind(mainMod .. " + F", hl.dsp.exec_cmd(internet_browser))
@@ -308,17 +312,33 @@ hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("hyprshot -m region"))
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"))
 -- hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("melonDS"))
+-- hl.bind(mainMod .. " + N", hl.dsp.exec_cmd([[
+--   if hyprctl clients | grep -qi 'class:.*melonds'; then
+--     hyprctl dispatch 'hl.dsp.focus({ workspace = 5 })'
+--   else
+--     melonDS
+--   fi
+-- ]]))
+-- Katana ZERO
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd([[
-  if hyprctl clients | grep -qi 'class:.*melonds'; then
+  if hyprctl clients | grep -qi 'class:.*katana zero'; then
     hyprctl dispatch 'hl.dsp.focus({ workspace = 5 })'
   else
-    melonDS
+    cd "$HOME/Games/Katana ZERO v1.5.9.0.2/Katana ZERO/Game" &&
+      WINEPREFIX="$HOME/.wine-katana" wine "Katana ZERO.exe"
   fi
 ]]))
 
 -- brightness
-hl.bind(mainMod .. " + Y", hl.dsp.exec_cmd("hyprsunset temperature 4000"))
-hl.bind(mainMod .. " + SHIFT + Y", hl.dsp.exec_cmd("hyprsunset identity"))
+-- toggle hyprsunset (starts on at 4000K, see autostart)
+hl.bind(mainMod .. " + Y", hl.dsp.exec_cmd([[
+  state="$XDG_RUNTIME_DIR/hyprsunset-off"
+  if [ -f "$state" ]; then
+    hyprctl hyprsunset temperature 4000 && rm -f "$state"
+  else
+    hyprctl hyprsunset identity && touch "$state"
+  fi
+]]))
 
 -- swap windows
 hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.swap({ direction = "left" }))
@@ -328,10 +348,10 @@ hl.bind(mainMod .. " + SHIFT + j", hl.dsp.window.swap({ direction = "down" }))
 
 
 -- resize windows with keyboard
-hl.bind(mainMod .. " + CTRL + h", hl.dsp.window.resize({ x = -15, y = 0, relative = true }), { repeating = true })
-hl.bind(mainMod .. " + CTRL + l", hl.dsp.window.resize({ x = 15, y = 0, relative = true }), { repeating = true })
-hl.bind(mainMod .. " + CTRL + k", hl.dsp.window.resize({ x = 0, y = -15, relative = true }), { repeating = true })
-hl.bind(mainMod .. " + CTRL + j", hl.dsp.window.resize({ x = 0, y = 15, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + ALT + h", hl.dsp.window.resize({ x = -15, y = 0, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + ALT + l", hl.dsp.window.resize({ x = 15, y = 0, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + ALT + k", hl.dsp.window.resize({ x = 0, y = -15, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + ALT + j", hl.dsp.window.resize({ x = 0, y = 15, relative = true }), { repeating = true })
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "left" }))
@@ -347,6 +367,20 @@ for i = 1, 10 do
   hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
+-- Previous/next workspace with mainMod + CTRL + h/l
+hl.bind(mainMod .. " + CTRL + h", hl.dsp.focus({ workspace = "-1" }))
+hl.bind(mainMod .. " + CTRL + l", hl.dsp.focus({ workspace = "+1" }))
+
+-- Move active window to prev/next workspace with mainMod + CTRL + SHIFT + h/l
+hl.bind(mainMod .. " + CTRL + SHIFT + h", hl.dsp.window.move({ workspace = "-1" }))
+hl.bind(mainMod .. " + CTRL + SHIFT + l", hl.dsp.window.move({ workspace = "+1" }))
+
+-- Back to the last used workspace with mainMod + grave (`)
+-- code:49 = physical ` key; with kb_variant "intl" it's a dead key (dead_grave), so "grave" never matches
+hl.bind(mainMod .. " + code:49", hl.dsp.focus({ workspace = "previous" }))
+-- Send active window to the last used workspace with mainMod + SHIFT + `
+hl.bind(mainMod .. " + SHIFT + code:49", hl.dsp.window.move({ workspace = "previous" }))
+
 -- Example special workspace (scratchpad)
 hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
@@ -354,6 +388,9 @@ hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:mag
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
 hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
+-- Push active window through existing workspaces with mainMod + SHIFT + scroll
+hl.bind(mainMod .. " + SHIFT + mouse_down", hl.dsp.window.move({ workspace = "e+1" }))
+hl.bind(mainMod .. " + SHIFT + mouse_up", hl.dsp.window.move({ workspace = "e-1" }))
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
@@ -426,6 +463,18 @@ hl.window_rule({
 
   move  = "20 monitor_h-120",
   float = true,
+})
+
+hl.window_rule({
+  name = "scratchpad-terminal",
+  match = { class = "^scratchpad$" },
+  workspace = "special:magic silent"
+})
+
+hl.window_rule({
+  name = "katana-zero-ws5",
+  match = { class = "(?i)^katana zero\\.exe$" },
+  workspace = "5"
 })
 
 hl.window_rule({
