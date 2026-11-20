@@ -308,9 +308,9 @@ hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu -display
 hl.bind(mainMod .. " + escape", hl.dsp.exec_cmd("killall waybar || waybar &"))
 hl.bind(mainMod .. " + tab", hl.dsp.exec_cmd("hyprlock"))
 hl.bind(mainMod .. " + A", hl.dsp.exec_cmd("~/.config/hypr/scripts/audiomenu.sh"))
-hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("hyprshot -m window -m active"))
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("hyprshot -m region"))
-hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m window"))
+hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m window -m active"))
 hl.bind("SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"))
 -- hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("melonDS"))
 -- hl.bind(mainMod .. " + N", hl.dsp.exec_cmd([[
